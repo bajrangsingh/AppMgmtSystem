@@ -1,0 +1,267 @@
+﻿@model ApprovalPortal.Models.ApprovalHeader
+@using ApprovalPortal.CustomHelpers;
+<style>
+    RawDiv {
+        white-space: nowrap;
+        height: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<div>
+    <div class="navbar-collapse">
+        <table class="table-condensed table-striped table-hover datatable responsive nowrap" style="margin-bottom: 3px !important;">
+            <tr>
+                <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblHeaderData')" style="width: 946px !important;">
+                    <a href="javascript:void();"> <b>+/-</b></a> Approval Header Data [ Approval ID:@Html.DisplayFor(model => model.APP_ID) ]
+                    <div style="display:none;"> @Html.TextBoxFor(model => model.APP_ID) @Html.TextBoxFor(m => m.APP_ID, new { style = "display: none;" }) </div>
+                </th>
+            </tr>
+            <tr id="tblHeaderData" name="tblHeaderData">
+                <td>
+                    <table style="width:946px!important;">
+                        <tr style="padding:8px">
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Approval For
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle" colspan="3">
+                                <div>
+                                    @Html.DisplayFor(m => m.APP_ApprovalFor)
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+
+                        <tr>
+
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Fiscal Year
+
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(m => m.FiscalYearText)
+                                </div>
+                            </td>
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Period
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(m => m.PeriodText)
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Function
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(m => m.FunctionText)
+                                </div>
+                            </td>
+                            <td style="width: 15%;  " class="tdLabelStyle">
+                                Nature of Transaction
+
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(m => m.TNTText)
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; font-weight:bold; " class="tdLabelStyle">
+                                Value (INR)
+                            </td>
+                            <td style="width: 35%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(model => model.App_Value)
+                                    @*@String.Format("{0:N0}", Model.App_Value)*@
+                                    
+                                </div>
+
+                            </td>
+                            <td style="width: 20%;" class="tdLabelStyle">
+                                Created On
+                            </td>
+                            <td style="width: 30%; " class="tdValueStyle">
+                                <div>
+                                    @Model.APP_CreatedOn.ToString("dd-MMM-yyyy")
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Approval Trail Name
+
+                            </td>
+                            <td style="width: 15%; " class="tdValueStyle">
+                                <div>
+                                    @Html.DisplayFor(model => model.ApprovalTrailName)
+                                </div>
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Pending With
+                            </td>
+                            <td style="" class="tdValueStyle">
+                                @Html.DisplayFor(model => model.PendingWith)
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td style="width: 15%; " class="tdLabelStyle">
+                                Final Emails Users
+                            </td>
+                            <td style="" class="tdValueStyle" colspan="3">
+
+
+
+                                @for (int i = 0; i < Model.SelectedaFinalEmailUsers_Entry.Length; i++)
+                                {
+
+                                    @Model.SelectedaFinalEmailUsers_Entry[i]
+                                    <span>  &#59;</span>
+
+                                }
+
+                            </td>
+                        </tr>
+                        <tr>
+                            @*<td style="width: 15%; " class="tdLabelStyle">
+                                    Reviewer
+
+                                </td>
+                                <td style="width: 15%; " class="tdValueStyle">
+                                    <div>
+                                        @Html.DisplayFor(model => model.ReviewerName)
+                                    </div>
+                                </td>*@
+
+                            @*<td style="width: 15%;  " class="tdLabelStyle">
+                                    Created On
+                                </td>
+                                <td style="" class="tdValueStyle">
+                                    @Model.APP_CreatedOn.ToString("dd-MMM-yyyy")
+                                </td>*@
+                        </tr>
+                        <tr>
+                            @*<td style="width: 15%; " class="tdLabelStyle">
+                                    Status
+                                </td>
+                                <td style="width: 15%; " class="tdValueStyle">
+                                    <div>
+                                        @Html.DisplayFor(m => m.ApprovalStatus)
+                                    </div>
+                                </td>*@
+                        </tr>
+                        @*<tr>
+                                <td style="width: 15%; " class="tdLabelStyle">
+                                    Creator Remarks
+
+                                </td>
+                                <td colspan="3" style="width: 15%; " class="tdValueStyle">
+                                    <div>
+                                        @Html.DisplayFor(model => model.APP_CreatorRemarks)
+                                    </div>
+                                </td>
+                            </tr>*@
+                        @*<tr>
+                                <td style="width: 15%; " class="tdLabelStyle">
+                                    Reviewer Remarks
+
+                                </td>
+                                <td colspan="3" style="width: 15%; " class="tdValueStyle">
+                                    <div>
+                                        @Html.DisplayFor(model => model.APP_ReviewerRemarks)
+                                    </div>
+                                </td>
+                            </tr>*@
+                        @*<tr>
+                                <td style="width: 15%; " class="tdLabelStyle">
+                                    App. Description
+                                </td>
+
+                                <td style="width: 35%; " class="tdValueStyle RawDiv" colspan="3">
+                                    <div>
+                                        @Html.Raw(HttpUtility.HtmlDecode(Model.APP_Description))
+                                    </div>
+                                </td>
+
+                            </tr>*@
+                    </table>
+                </td>
+
+
+            </tr>
+
+        </table>
+
+        <table>
+            <tr>
+                <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblApprovalDesc')" style="width:946px!important; height:45px;">
+                    <a href="javascript:void();"> <b>+/-</b></a>
+                    Approval Summary
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div id="tblApprovalDesc" name="tblApprovalDesc" style=" border: 1px solid #ddd;  width:946px;height:320px;overflow:scroll;">
+                        <div>
+                            @Html.Raw(HttpUtility.HtmlDecode(Model.APP_Description))
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        @if (Model.UploadedAttachmentsList != null)
+        {
+            if (Model.UploadedAttachmentsList.Count() > 0)
+            {
+                <table>
+                    <tr>
+                        <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblUploadedFiles')" style="width:946px!important; height:45px;">
+                            <a href="javascript:void();"> <b>+/-</b></a>
+                            Attachments
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="tblUploadedFiles" name="tblUploadedFiles" style=" border: 1px solid #ddd">
+                                @Html.Partial("_VwUploadedFiles", @Model.UploadedAttachmentsList)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            }
+        }
+        @if (Model.ApprovalTransactionList != null)
+        {
+            if (Model.ApprovalTransactionList.Count() > 0)
+            {
+                <table>
+                    <tr>
+                        <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblApprovalTransaction')" style="width:946px!important; height:45px;">
+                            <a href="javascript:void();"> <b>+/-</b></a>Approval Tracking
+                        </th>
+                    </tr>
+                    <tr >
+                        <td >
+                            <div id=" tblapprovaltransaction" name="tblApprovalTransaction" style="border: 1px solid #ddd;">
+                                @Html.Partial("_ApprovalTransaction", @Model.ApprovalTransactionList)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            }
+        }
+
+    </div>
+</div>

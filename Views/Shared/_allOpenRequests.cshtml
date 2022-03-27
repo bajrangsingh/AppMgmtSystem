@@ -1,0 +1,49 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalHeader>
+@using NonFactors.Mvc.Grid
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="~/js/jquery.freezeheader.js"></script>
+<script>
+    $(document).ready(function () {
+       // $("#my-grid").freezeHeader({ 'height': '300px' });
+    })
+</script>
+<div style="width:100%;">
+    @if (Model != null)
+    {
+        @(Html.Grid(Model).Build(columns =>
+        {
+           // columns.Add(model => model.APP_ID).Titled("ID").Filterable(true).Sortable(false).RenderedAs(o => Html.ActionLink(o.APP_ID.ToString(), o.ActionMethod, new { app_id = o.APP_ID, IsActionable = o.IsActionable, UserRole=o.UserRole }, null));
+           // columns.Add(model => model.APP_ApprovalFor).Titled("Approval_For/Approval_Description ").Filterable(true); ;
+            columns.Add(model => model.APP_ID).Titled("ID").Filterable(true).Sortable(false);
+            columns.Add(model => model.APP_ApprovalFor).Titled("Approval_For/Approval_Description ").Filterable(true).RenderedAs(o => Html.ActionLink(o.APP_ApprovalFor.ToString(), o.ActionMethod, new { app_id = o.APP_ID, IsActionable = o.IsActionable, UserRole = o.UserRole }, null)); ;
+            columns.Add(model => model.FiscalYearText).Titled("FY").Filterable(true);
+            columns.Add(model => model.PeriodText).Titled("Period").Filterable(true);
+            columns.Add(model => model.FunctionText).Titled("Function").Filterable(true);
+            columns.Add(model => model.TNTText).Titled("Nature of Transaction").Filterable(true);
+            columns.Add(model => model.App_Value).Titled("Value (INR)").Formatted("{0:N0}").Filterable(true);
+            columns.Add(model => model.ApprovalTrailName).Titled("Approval Trail").Filterable(true);
+            columns.Add(model => model.CreatorName).Titled("Creator").Filterable(true);
+            //columns.Add(model => model.ReviewerName).Titled("Reviewer").Sortable(true).Filterable(true);
+            columns.Add(model => model.PendingWith).Titled("Pending With").Filterable(true);
+            //
+            columns.Add(model => model.APP_ID).Titled("Notes").RenderedAs(o => Html.ActionLink("Notes", "ViewNotes", new { app_id = o.APP_ID }, null));
+        })
+        .UsingFilterMode(GridFilterMode.Excel)
+        .Empty("No data found")
+        //.Filterable()
+        //.Sortable()
+        .Pageable(pager =>
+        {
+            pager.PageSizes = new Dictionary<Int32, String> { { 0, "All" }, { 10, "10" }, { 50, "50" }, { 100, "100" } };
+            pager.ShowPageSizes = true;
+            pager.RowsPerPage = 10;
+        })
+        .Css("css-classes table-striped grid-table") // Overwrites all classes with the new ones
+        .AppendCss("table-hover") // Appends classes to the current ones
+        .Id("my-grid")
+        )
+    }
+
+</div>

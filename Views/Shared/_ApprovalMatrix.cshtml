@@ -1,0 +1,33 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalMatrix>
+<table class="table-bordered table-responsive table RecentActivityTable">
+    <tr class="TableHeader">
+        <th>
+            Employee    Name
+        </th>
+      
+        <th>
+            Role
+        </th>
+        <th>
+            Approving Level
+        </th>
+    </tr>
+
+    @foreach (var item in Model.OrderBy(x => x.AM_ApprovingLevel))
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AM_EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AM_Role)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.AM_ApprovingLevel)
+            </td>
+        </tr>
+    }
+
+</table>
+

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalTransaction>
+@using ApprovalPortal.CustomHelpers
+<table class="table-bordered table-responsive table RecentActivityTable" style="width: 946px !important;">
+    <tr class="TableHeader" style="width:945px!important;">
+        <th style="width:30%">Employee Name </th>
+        <th style="width:10%">Role</th>
+        <th style="width:10%">Action</th>
+        <th style="width:30%">Remarks</th>
+        <th style="width:200px">Action Taken On</th>
+
+    </tr>
+
+    @foreach (var item in Model.OrderBy(x => x.AT_ApprovingLevel))
+{
+    <tr style="width:945px!important;">
+        <td style="width:30%">
+            @Html.DisplayFor(modelItem => item.AT_EmployeeName)
+        </td>
+        <td style="width:10%">
+            @Html.DisplayFor(modelItem => item.AT_Role)
+        </td>
+        <td style="width:10%">@Html.DisplayFor(modelItem => item.ApproverAction)</td>
+
+        <td style="width:30%">
+            @Html.DisplayFor(modelItem => item.AT_ApprovingRemarks)
+        </td>
+        <td style="width:20%">
+            @Html.DisplayFor(modelItem => item.AT_ApprovingDate)
+        </td>
+    </tr>
+}
+
+</table>
+
+

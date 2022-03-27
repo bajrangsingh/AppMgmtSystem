@@ -1,0 +1,22 @@
+﻿@model IEnumerable<ApprovalPortal.Models.FinalEmailUsersList>
+<table class="table" style=" border: 1px solid black;">
+    <tr>
+        <th>
+            @Html.Label("User Name [Personnel No]")
+        </th>
+        <th>
+            @Html.Label("E-Mail")
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeName)  [@Html.DisplayFor(modelItem => item.ELU_PersonnelNo)]
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EMail)
+            </td>
+        </tr>
+    }
+</table>

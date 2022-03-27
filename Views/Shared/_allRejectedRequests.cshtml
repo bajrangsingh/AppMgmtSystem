@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalHeader>
+@using NonFactors.Mvc.Grid
+<div style="width:100%;">
+@if(Model!=null)
+{ 
+        @(Html.Grid(Model).Build(columns =>
+        {
+            columns.Add(model => model.APP_ID).Titled("App. ID").Filterable(true).RenderedAs(o => Html.ActionLink(o.APP_ID.ToString(), "Review", new { app_id = o.APP_ID }, null));
+            columns.Add(model => model.APP_ApprovalFor).Titled("Title").Sortable(true).Filterable(true); ;
+            columns.Add(model => model.FiscalYearText).Titled("Fiscal Year").Sortable(true).Filterable(true);
+            columns.Add(model => model.PeriodText).Titled("Period").Sortable(true).Filterable(true);
+            columns.Add(model => model.FunctionText).Titled("Function").Sortable(true).Filterable(true);
+            columns.Add(model => model.TNTText).Titled("Txn-Tag/Nature").Sortable(true).Filterable(true);
+            columns.Add(model => model.CreatorName).Titled("Creator").Sortable(true).Filterable(true);
+            columns.Add(model => model.ReviewerName).Titled("Reviewer").Sortable(true).Filterable(true);
+            columns.Add(model => model.PendingWith).Titled("Pending With").Sortable(true).Filterable(true);
+            columns.Add(model => model.ApprovalTrailName).Titled("Approval Trail").Sortable(true).Filterable(true); 
+       })
+        .UsingFilterMode(GridFilterMode.Excel)
+        .Empty("No data found")
+        .Filterable()
+        .Sortable()
+        .Pageable()
+        )
+}
+</div>
+

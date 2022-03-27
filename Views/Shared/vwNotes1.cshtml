@@ -1,0 +1,18 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalNotes>
+
+@*@(Html.Grid(Model).Build(columns =>
+    {
+        //columns.Add(model => model.AN_ID).Titled("Notes ID").Filterable(true).RenderedAs(o => Html.ActionLink(o.AN_ID.ToString(), "ViewNote", new { app_id = o.AN_ID}, null));
+        columns.Add(model => model.AN_Notes).Titled("Notes Description").Sortable(true).Filterable(true).Css("width85");
+        columns.Add(model => model.AN_AddedOn).Titled("Date").Sortable(true).Filterable(true).Css("width10");
+        columns.Add(model => model.EmployeeName).Titled("Added By").Sortable(true).Filterable(true).Css("width05");
+        columns.Add(model => model.AN_ID).Titled("").RenderedAs(o => Html.ActionLink("Edit", "ViewNotes", new { app_id = o.AN_APP_ID, AN_ID = o.AN_ID }, null));
+        columns.Add(model => model.AN_ID).Titled("").RenderedAs(o => Html.ActionLink("Delete", "DeleteNotes", new { app_id = o.AN_APP_ID, AN_ID = o.AN_ID }, null)).Css("deleteLink");
+    })
+    .UsingFilterMode(GridFilterMode.Excel)
+    .Empty("No data found")
+    .Pageable()
+    .Css("css-classes") // Overwrites all classes with the new ones
+    .AppendCss("table-hover") // Appends classes to the current ones
+    )*@
+

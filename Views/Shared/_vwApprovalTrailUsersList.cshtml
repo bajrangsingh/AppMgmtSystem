@@ -1,0 +1,82 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalTrailUsersList>
+<table class="table" style=" border: 1px solid black;">
+    @{
+        var loginEmp = (ApprovalPortal.Models.Users)Session["loginEmp"];
+        <thead>
+            <tr>
+                <th>
+                    @Html.Label("Level")
+                </th>
+                <th>
+                    @Html.Label("Approver")
+                </th>
+
+                @if (ViewBag.Title == "IndexFinalEmailUsers")
+                {
+                    <th>
+                        @Html.Label("Threshold Value")
+                    </th>
+                    <th>
+                        @Html.Label("Active")
+                    </th>
+
+                    <th>
+                        @Html.Label("Created By")
+                    </th>
+                    <th>
+                        @Html.Label("Created On")
+                    </th>
+
+                    <th>
+                        @Html.Label("Updated By")
+                    </th>
+                    <th>
+                        @Html.Label("Updated On")
+                    </th>
+                    <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ATU_ApprovingLevel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmployeeName)  [@Html.DisplayFor(modelItem => item.ATU_PersonnelNo)]
+                    </td>
+                    @if (loginEmp.US_Admin)
+                    {
+
+                    }
+                    @if (ViewBag.Title == "IndexFinalEmailUsers")
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ATU_ThresholdValue)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ATU_IsActive)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedByName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UpdatedByName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UpdatedOn)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "IndexApprovalTrailUsers", new { AT_ID = item.AT_ID, ATU_ID = item.ATU_ID })
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    }
+</table>
