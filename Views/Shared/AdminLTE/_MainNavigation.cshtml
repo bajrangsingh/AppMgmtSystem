@@ -1,0 +1,130 @@
+﻿@using ApprovalPortal.Models;
+@{
+    string userName = User.Identity.Name;
+
+}
+@if (@Session["loginEmp"] == null)
+{
+    Response.Redirect("~/Account/LogIn");
+}
+
+@{
+
+    ApprovalPortal.Models.Users user = (ApprovalPortal.Models.Users)Session["loginEmp"];
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="~/Home" class="brand-link" style="height: 45px; vertical-align: central">
+            <img src="~/img/zeefavicon.ico" alt="Approval Portal" class="brand-image img-circle elevation-3"
+                 style="opacity: .8">
+        </a>
+        <div class="sidebar">
+
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item ">
+                        <a href="~/Approval/ViewRequests?ReqType=Pending" class="nav-link">
+                            <i class="nav-icon fas fa-home"></i>
+                            <p>
+                                Home
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="manage" class="nav-link glyphicon-pencil">
+                            <i class="nav-icon fab fa-elementor"></i>
+                            <p>Ref. Docs</p>
+                            <i class="right fas fa-angle-left"></i>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: none;">
+                            <li class="nav-item">
+                                <a class="nav-link" href="~/Approval/DownloadSupportDoument?Filename=SAPRightsRequest.pdf" title="SAP Rights 1.0" target="_blank">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>SAP Rights Request</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="~/Approval/DownloadSupportDoument?Filename=ApprovalFlowRef.pdf" title="Approval Flow" target="_blank">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Approval Flow Ref</p>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                    @if (user.US_Admin == true)
+                    {
+                        <li class="nav-item">s
+                            <a id="manage" class="nav-link has-treeview">
+                                <i class="nav-icon fas fa-user-circle"></i>
+                                <p>Masters</p>
+                                <i class="right fas fa-angle-left"></i>
+                            </a>
+                            <ul class="nav nav-treeview" style="display: none;">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/AllApprovalsList" title="All Approvals List">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>All Approvals List</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexUsers" title="Manage">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Users</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexApprovalTrail" title="Manage Approval Trail">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Approval Trail</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexFinalEmailUsers" title="Manage Final Email Users">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Final Email List</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexFiscalYear" title="Manage Fiscal Year">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Fiscal Year</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexPeriod" title="Manage Period">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Period</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexFunction" title="Manage Function">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Function</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="~/Admin/IndexTNT" title="Manage Tag/Nature Of Transaction">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Nature Of Transaction</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    }
+
+                    <li class="nav-item ">
+                        <a href="~/Account/Login" class="nav-link">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>
+                                Logout
+                            </p>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    </aside>
+}

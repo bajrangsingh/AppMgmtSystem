@@ -1,0 +1,216 @@
+﻿@if (@Session["loginEmp"] == null)
+{
+    Response.Redirect("~/Account/LogIn");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Approval Portal</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+
+    <link rel=" stylesheet" href="~/css/adminlte.min.css">
+    <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet" />
+    <link rel=" stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jhtmlarea/0.8.0/style/jHtmlArea.css" />
+    <link href="~/Content/zee.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ComboBox.css" rel="stylesheet" />
+    <link href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="sidebar-mini sidebar-collapse">
+
+    <div class="wrapper">
+        @Html.Partial("AdminLTE/_TopNavigation")
+        @Html.Partial("AdminLTE/_MainNavigation")
+
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    @Html.Hidden("HidReqType", Request.QueryString["ReqType"])
+                    <div class="row mb-2">
+                        @{
+                            ApprovalPortal.Models.Users user = (ApprovalPortal.Models.Users)Session["loginEmp"];
+                            <div class="col-sm-2">@Html.ActionLink("Pending For Me", "ViewRequests", "Approval", routeValues: new { ReqType = "Pending" }, htmlAttributes: new { @class = "btn btn-primary1 tab", @role = "button", @style = "width:100%;", id = "tabPending" })  </div>
+                            <div class="col-sm-2">@Html.ActionLink("Open / In Progress", "ViewRequests", "Approval", routeValues: new { ReqType = "Open" }, htmlAttributes: new { @class = "btn btn-primary1 tab", @role = "button", @style = "width:100%;", id="tabOpen" })  </div>
+                            <div class="col-sm-2">@Html.ActionLink("Approved List", "ViewRequests", "Approval", routeValues: new { ReqType = "Closed" }, htmlAttributes: new { @class = "btn btn-primary1 tab", @role = "button", @style = "width:100%;", id = "tabClosed" })  </div>
+                            <div class="col-sm-2">@Html.ActionLink("Rejected List", "ViewRequests", "Approval", routeValues: new { ReqType = "Rejected" }, htmlAttributes: new { @class = "btn btn-primary1 tab", @role = "button", @style = "width:100%;", id = "tabRejected" })  </div>
+                            if (user.US_Admin == true)
+                            {
+                                @*<div class="col-sm-1">@Html.ActionLink("All", "ViewRequests", "Approval", routeValues: new { ReqType = "All" }, htmlAttributes: new { @class = "btn btn-primary1 tab", @role = "button", @style = "width:100%;", id = "tabAll" })  </div>*@
+                            }
+                            if (user.US_Creator == true)
+                            {
+                                <div class="col-sm-4" style="float:right!important;">@Html.ActionLink("Create New Approval", "Create", "Approval", routeValues: new { app_ID = 0, IsActionable = false }, htmlAttributes: new { style = "float:right;" })  </div>
+                            }
+                        }
+                    </div>
+                    <div class="row mb-2">
+                        @if (TempData["DisplayMsg"] != null)
+                        {
+                            <div class="alert alert-success col-sm-12">
+                                <strong>@TempData["DisplayMsg"]</strong>
+                            </div>
+                        }
+                    </div>
+                    <div class="row mb-2">
+                        @if (TempData["ErrorMsg"] != null)
+                        {
+                            <div class="alert alert-danger col-sm-12">
+                                <strong>@TempData["ErrorMsg"]</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- /.content-header -->
+            <div class="content">
+                @RenderBody()
+            </div>
+            <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 class="modal-title" id="myModalLabel">Alert</h4>
+                        </div>
+                        <div class="modal-body">
+                            <span id="altMsg"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+            <div class="p-3">
+                <h5>Title</h5>
+                <p>Sidebar content</p>
+            </div>
+        </aside>
+        @Html.Partial("AdminLTE/_Footer")
+    </div>
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    @*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/js/adminlte.min.js"></script>
+    <script src="~/Scripts/MvcGrid/mvc-grid.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jhtmlarea/0.8.0/scripts/jHtmlArea-0.8.min.js"></script>
+    <script src="~/Scripts/JqueryComboBox.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script>
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    </script>
+    <style>
+        .loader {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            /*background: url('http://localhost:52992/img/Preloader_3.gif') 50% 50% no-repeat rgb(249,249,249);*/
+            background: url('https://www.zeeintranet.com/ApprovalPortal/img/Preloader_3.gif') 50% 50% no-repeat rgb(249,249,249);
+            opacity: .8;
+        }
+    </style>
+    <script>
+    $(document).ready(function () {
+        //window.setTimeout(function () {
+        //    $(".alert").fadeTo(1000, 0).slideUp(1000, function () {
+        //        $(this).remove();
+        //    });
+        //}, 5000)
+
+        $(".alert").first().hide().slideDown(500).delay(4000).slideUp(500, function () {
+            $(this).remove();
+        });
+
+        $(".deleleLink").click(function () {
+            alert("The paragraph was clicked.");
+        });
+        $(".table").DataTable();
+
+        var clickedTab = $("#HidReqType").val();
+        //alert(clickedTab);
+        if (clickedTab == "Pending") {
+            $("#tabPending").css("background-color", "#B096C6");
+
+        }
+        else if (clickedTab == "Open") {
+            $("#tabOpen").css("background-color", "#B096C6");
+
+        }
+        else if (clickedTab == "Closed") {
+            $("#tabClosed").css("background-color", "#B096C6");
+
+        }
+        else if (clickedTab == "Rejected") {
+            $("#tabRejected").css("background-color", "#B096C6");
+
+        }
+        else if (clickedTab == "All") {
+            $("#tabAll").css("background-color", "#B096C6");
+
+        }
+    });
+    $(window).load(function () {
+        $(".loader").fadeOut("slow");
+    });
+
+    function ShowLoader() {
+        document.getElementById('loader').style.display = "";
+    }
+
+    function MyAlert(msg) {
+        $('#alertModal').modal('show');
+        $('#altMsg').html(msg);
+    }
+
+    function onlyNumberKey(evt) {
+        /// alert('in only numerci');
+        // Only ASCII character in that range allowed
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+
+    var SiteUrl = @Html.Raw(HttpUtility.JavaScriptStringEncode(new Uri(new Uri(this.Context.Request.Url.GetLeftPart(UriPartial.Authority)), Url.Content("~/")).ToString(), true));
+
+    //$(document).ready(function () {
+    //    $(".table").DataTable();
+    //});
+
+    function DisableBackButton() {
+        window.history.forward();
+    }
+    setTimeout("DisableBackButton()", 0);
+    window.onunload = function () {
+        null
+    };
+
+    </script>
+    <div id="loader" class="loader"></div>
+    @RenderSection("Scripts", required: false)
+    
+</body>
+</html>
