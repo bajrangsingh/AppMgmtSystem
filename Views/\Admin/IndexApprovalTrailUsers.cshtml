@@ -1,0 +1,98 @@
+﻿@model ApprovalPortal.Models.ApprovalTrailUsersList
+
+@{
+    ViewBag.Title = "IndexFinalEmailUsers";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlUsers").selectize();
+    });
+
+    function validateInputs() {
+        var validationMsg = "";
+
+        if ($("#ddlUsers").val() == "") {
+            validationMsg = validationMsg + "Please Select  User<br>";
+        }
+
+        if ($("#ATU_ApprovingLevel").val() == "" || $("#ATU_ApprovingLevel").val() == "0") {
+            validationMsg = validationMsg + ('Please Enter Approving level<br>');
+        }
+        if ($("#txtThresholdValue").val() == "") {
+            validationMsg = validationMsg + ('Please Enter Threshold Value<br>');
+        }
+        else if ($("#txtThresholdValue").len > 18) {
+            validationMsg = validationMsg + ('Please Enter Value up to 12 digits only<br>');
+        }
+
+        if (validationMsg != "") {
+            MyAlert(validationMsg);
+            return false;
+        }
+        return true;
+    }
+</script>
+
+
+<h4> @Html.Label("Trail Name-") @Model.ApprovalTrailName</h4>
+@Html.Partial("_vwApprovalTrailUsersList", Model.TrailUserList)
+
+@using (Html.BeginForm("AddEditApprovalTrailUsers", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            <h4>Add/Edit Approver</h4>
+            @Html.HiddenFor(model => model.AT_ID)
+            @Html.HiddenFor(model => model.ATU_ID)
+        </div>
+
+        <div class="form-group">
+            <span style="color:red">*</span> @Html.Label("Approver", null, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.ATU_PersonnelNo, new SelectList(ViewBag.AllApprovers, "Value", "Text", null), "Select", new { id = "ddlUsers", @class = "form-control", @style = "width:100%;" })
+                @Html.ValidationMessageFor(model => model.ATU_PersonnelNo)
+            </div>
+        </div>
+        <div class="form-group">
+            <span style="color:red">*</span> @Html.Label("Approving Level", null, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ATU_ApprovingLevel, "{0:0}", new { @type = "number", @maxlength = "2" })
+                @Html.ValidationMessageFor(model => model.ATU_ApprovingLevel)
+            </div>
+        </div>
+        <div class="form-group">
+            <span style="color:red">*</span> @Html.Label("Threshold Value in INR", null, new { @class = "control-label col-md-3" })
+            <div class="col-md-10">
+                @*@Html.TextBoxFor(model => model.App_Value, null, new { @id = "txtApp_Value", @type = "number", @maxlength = "12", @min = "0", @max = "999999999999" })*@
+                @Html.TextBoxFor(model => model.ATU_ThresholdValue, new { @id = "txtThresholdValue", @maxlength = "18", onkeypress = "return onlyNumberKey(event)" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Active", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ATU_IsActive)
+                @Html.ValidationMessageFor(model => model.ATU_IsActive)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary1" style="width:100%" onclick="return validateInputs();" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<div>
+    @Html.ActionLink("Back to List", "IndexApprovalTrail")
+</div>

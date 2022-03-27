@@ -1,0 +1,97 @@
+﻿@model ApprovalPortal.Models.Users
+
+@{
+    ViewBag.Title = "AddEditUser";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlUsers").selectize();
+    });
+</script>
+<h2>Manage User</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
+        <div class="form-group">
+            @Html.Label("User", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.US_ID)
+                @Html.DropDownListFor(m => m.US_PersonnelNo, new SelectList(ViewBag.CMSUsers, "Value", "Text", null), "Select", new { id = "ddlUsers", @class = "form-control", @style = "width:100%;" })
+                @Html.ValidationMessageFor(model => model.US_PersonnelNo)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Creator", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.US_Creator)
+                @Html.ValidationMessageFor(model => model.US_Creator)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Reviewer", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.US_Reviewer)
+                @Html.ValidationMessageFor(model => model.US_Reviewer)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Approver", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.US_Approver)
+                @Html.ValidationMessageFor(model => model.US_Approver)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Admin", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.US_Admin)
+                @Html.ValidationMessageFor(model => model.US_Admin)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Active", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.US_IsActive)
+                @Html.ValidationMessageFor(model => model.US_IsActive)
+            </div>
+        </div>
+
+
+        @*<div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        One of three columns
+                    </div>
+                    <div class="col-sm">
+                        One of three columns
+                    </div>
+                    <div class="col-sm">
+                        One of three columns
+                    </div>
+                </div>
+            </div>*@
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn btn-primary1" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "IndexUsers")
+</div>

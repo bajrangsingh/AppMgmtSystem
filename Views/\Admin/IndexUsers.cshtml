@@ -1,0 +1,94 @@
+﻿@model IEnumerable<ApprovalPortal.Models.Users>
+@{
+    ViewBag.Title = "IndexUsers";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+
+<h2> Users</h2>
+
+<p>
+    @Html.ActionLink("Create New", "AddEditUsers")
+</p>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.Label("Users")
+            </th>
+            <th>
+                @Html.Label("Creator")
+            </th>
+            <th>
+                @Html.Label("Reviewer")
+            </th>
+            <th>
+                @Html.Label("Approver")
+            </th>
+            <th>
+                @Html.Label("Admin")
+            </th>
+            <th>
+                @Html.Label("Active")
+            </th>
+            <th>
+                @Html.Label("Created By")
+            </th>
+            <th>
+                @Html.Label("Created On")
+            </th>
+
+            <th>
+                @Html.Label("Updated By")
+            </th>
+            <th>
+                @Html.Label("Updated On")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(modelItem => item.US_ID)
+                    @Html.DisplayFor(modelItem => item.NameWithSAPID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.US_Creator)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.US_Reviewer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.US_Approver)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.US_Admin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.US_IsActive)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedByName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedOn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedByName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedOn)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "AddEditUsers", new { US_ID = item.US_ID })
+                    @*| @Html.ActionLink("Delete", "Delete", new { ID = item.ID })*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
