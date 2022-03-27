@@ -1,0 +1,50 @@
+﻿@model ApprovalPortal.Models.ApprovalList
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.fn.dataTable.moment('DD/MM/YYYY');
+        $('#tblAllPendingRequests').DataTable({
+            "order": [[1, "asc"]],
+            "pageLength": 25,
+        });
+    });
+    $(document).ready(function () {
+        $.fn.dataTable.moment('DD/MM/YYYY');
+        $('#tblAllOpenRequests').DataTable({
+            "order": [[1, "desc"]],
+            "pageLength": 25,
+        });
+    });
+    $(document).ready(function () {
+        $.fn.dataTable.moment('DD/MM/YYYY');
+        $('#tblAllClosedRequests').DataTable({
+            "order": [[1, "desc"]],
+            "pageLength": 25,
+        });
+    });
+
+    $(document).ready(function () {
+        $.fn.dataTable.moment('DD/MM/YYYY');
+        $('#tblAllRejectedRequests').DataTable({
+            "order": [[1, "desc"]],
+            "pageLength": 25,
+        });
+    });
+
+
+</script>
+
+<div class="container body-content" style="font-family: Calibri;">
+    @*<div style="height:100%;background-color:white">*@
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @*<h4 class="breadcrumb" style="font-family: Calibri;"><a style="text-decoration: none" href="@Url.Action("Index", "Home")">Approval Portal</a> &raquo;<a style="text-decoration: none" href="@Url.Action("Index", "Approval")">Request</a> &raquo; My Approvals</h4>*@
+        @*@Html.Raw(TempData["DisplayMsg"])*@
+    }
+</div>
+

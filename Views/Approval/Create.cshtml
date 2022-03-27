@@ -1,0 +1,421 @@
+﻿@model ApprovalPortal.Models.ApprovalHeader
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+    if (Model != null)
+    { Model.APP_CreatorRemarks = ""; }
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // More code using $ as alias to jQuery
+
+        $("#ddlFiscal").selectize();
+        $("#ddlPeriod").selectize();
+        $("#ddlFunction").selectize();
+
+        $("#ddlTNT").selectize();
+        $("#ddlReviewer").selectize();
+        $("#ddlFinalEmailList").selectize();
+
+        $("#ddlApprovalTrail").selectize();
+
+        $("#APP_Description").height(350);
+        //$("#APP_Description").htmlarea({
+        //    toolbar: ["html", "|",
+        //            "forecolor",  // <-- Add the "forecolor" Toolbar Button
+        //            "|", "bold", "italic", "underline", "|", "h1", "h2", "h3", "|", "link", "unlink"] // Overrides/Specifies the Toolbar buttons to show
+        //});
+        $("#APP_Description").htmlarea();
+
+        ShowLoader();
+
+        if ($("#txtApp_Value").val() != "") {
+            var AT_Value = parseInt($("#txtApp_Value").val());
+            $("#txtApp_Value").val(AT_Value);
+        }
+
+
+    });
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        //var id = $(evt.target).attr("id");
+
+        //if (id == 'txtTotalDealAmount')
+        //    $('#word').innerHTML = convertNumberToWords(this.value)
+
+        return true;
+    }
+    function CheckAttachments(myFile) {
+        var noOfFiles = myFile.files.length;
+        var fileSize = 0;
+        //if (noOfFiles > 5) {
+        //    alert("Please Select Max 5 FIles");
+        //    return false;
+        //}
+        //else
+        //{
+        for (var i = 0; i < noOfFiles; i++) {
+            fileSize = fileSize + myFile.files[i].size;      // / 1024 / 1024).toFixed(2);
+            debugger;
+            // $("#upload_prev").append('<span>' + '<div class="filenameupload">' + files[i].name + ' (' + fileSize + ' MB)</div>' + '<p class="close" >X</p></span>');
+        }
+        if (fileSize > 18874368) {
+            // $("#input-file-1").html(file_names);
+            alert("You have exceeded maximum allowed size 18GB")
+            $("#fileAttachments").val('');
+            return false;
+        }
+        //alert(fileSize);
+
+        // }
+    }
+
+    function ShowApprovalTrailUsers(AT_ID) {
+        if (AT_ID != "") {
+
+            var AT_Value = $("#txtApp_Value").val();
+
+            if (AT_Value == "")
+                AT_Value = 0;
+
+            ShowLoader();
+            $.ajax({
+                url: SiteUrl + '/Approval/GetApprovalTrailUsers',
+                contentType: 'application/html; charset=utf-8',
+                // data: { AT_ID: AT_ID },
+                data: { AT_ID: AT_ID, AT_Value: AT_Value },
+                type: 'GET',
+                dataType: 'html'
+            })
+            .success(function (result) {
+                $('#divApprovalTrailUsersList').html(result);
+                $(".loader").fadeOut("slow");
+            })
+            .error(function (xhr, status) {
+                alert(status);
+                $(".loader").fadeOut("slow");
+            })
+        }
+        else {
+            $('#divApprovalTrailUsersList').html('');
+            $(".loader").fadeOut("slow");
+        }
+    }
+    function ShowFinalEmailUsers(EL_ID) {
+
+        $.ajax({
+            url: SiteUrl + '/Approval/GetFinalEmailUsers',
+            contentType: 'application/html; charset=utf-8',
+            data: { EL_ID: EL_ID },
+            type: 'GET',
+            dataType: 'html'
+        })
+        .success(function (result) {
+            $('#divFinalEmailUsersList').html(result);
+            $("#divLoader").hide()
+        })
+        .error(function (xhr, status) {
+            alert(status);
+            $(".loader").fadeOut("slow");
+        })
+    }
+
+    function validateInputs() {
+        var validationMsg = "";
+
+        if ($("#ddlFunction").val() == "") {
+            validationMsg = validationMsg + ('Please Select Function<br>');
+        }
+
+        if ($("#ddlTNT").val() == "") {
+            validationMsg = validationMsg + ('Please Select Nature of Transaction<br>');
+        }
+        if ($("#ddlFiscal").val() == "") {
+            validationMsg = validationMsg + ('Please Select Fiscal Year<br>');
+        }
+
+        if ($("#ddlPeriod").val() == "") {
+            validationMsg = validationMsg + ('Please Select Period<br>');
+        }
+
+        if ($("#txtApprovalTitle").val() == "") {
+            validationMsg = validationMsg + "Please Enter Approval For<br>";
+        }
+
+        if ($("#APP_Description").val() == "") {
+            validationMsg = validationMsg + ('Please Enter Approval Summary<br>');
+        }
+
+
+
+
+        if ($("#txtApp_Value").val() == "") {
+            validationMsg = validationMsg + ('Please Enter Value<br>');
+        }
+        else if ($("#txtApp_Value").len > 12) {
+            validationMsg = validationMsg + ('Please Enter Value up to 12 digits only<br>');
+        }
+
+        if ($("#ddlApprovalTrail").val() == "") {
+            validationMsg = validationMsg + ('Please Select Approval Trail<br>');
+        }
+        if ($('#ddlFinalEmailList').val() == null) {
+            validationMsg = validationMsg + ('Please Select Final Email List.<br>');
+        }
+        if (validationMsg != "") {
+            MyAlert(validationMsg);
+            return false;
+        }
+        ShowLoader();
+        return true;
+    }
+
+    //$(function () {
+    //    $("#txtApp_Value").keyup(onlyNumberKey);
+    //});
+
+
+    function onlyNumberKey(evt) {
+        /// alert('in only numerci');
+        // Only ASCII character in that range allowed
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+
+    function OpenCloseGroup(groupID) {
+        //var TR = document.getElementByName(groupID);
+        var TRs = document.getElementsByName(groupID);
+        debugger;
+        // alert(TRs.length);
+        var i;
+        for (i = 0; i < TRs.length; i++) {
+            $(TRs[i]).toggle();
+        }
+    }
+
+    function ClearApprovalTrail() {
+        //$("#ddlApprovalTrail").val('');
+        // $('#ddlApprovalTrail option[value=""]').prop('selected', false);
+        $('#divApprovalTrailUsersList').html('');
+        if ($('#ddlApprovalTrail').val() != "") {
+            ShowApprovalTrailUsers($('#ddlApprovalTrail').val());
+        }
+
+    }
+
+
+
+
+</script>
+
+@using (Html.BeginForm("Create", "Approval", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
+    <div class="form-horizontal" style="margin-left:10px;">
+
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            <h4>New Approval</h4>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.APP_ID)
+                @Html.HiddenFor(model => model.APP_ID)
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Function", null, new { @class = "control-label col-md-5" })
+            <span style="color:red">*</span> @Html.Label("Nature of Transaction", null, new { @class = "control-label col-md-5" })
+        </div>
+        <div class="form-row">
+            <div class=" form-group col-md-5">
+                @Html.DropDownListFor(m => m.APP_FunctionId, new SelectList(ViewBag.Function, "Value", "Text", null), "Select", new { id = "ddlFunction", @class = "form-control", @style = "width:98%;" })
+                @Html.ValidationMessageFor(model => model.APP_FunctionId, null, new { @class = "text-danger" })
+            </div>
+            <div class=" form-group col-md-5">
+                @Html.DropDownListFor(m => m.APP_TAGNatureId, new SelectList(ViewBag.TAGNATUREOFTRANSACTION, "Value", "Text", null), "Select", new { id = "ddlTNT", @class = "form-control", @style = "width:98%;" })
+                @Html.ValidationMessageFor(model => model.APP_TAGNatureId, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Fiscal Year", null, new { @class = "control-label col-md-5" })
+            <span style="color:red">*</span> @Html.Label("Period", null, new { @class = "control-label col-md-5" })
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5">
+                @Html.DropDownListFor(m => m.APP_FiscalYearId, new SelectList(ViewBag.FiscalYear, "Value", "Text", null), "Select", new { id = "ddlFiscal", @class = "form-control", @style = "width:98%;" })
+                @Html.ValidationMessageFor(model => model.APP_FiscalYearId, null, new { @class = "text-danger" })
+            </div>
+            <div class=" form-group col-md-5">
+                @Html.DropDownListFor(m => m.APP_PeriodId, new SelectList(ViewBag.Period, "Value", "Text", null), "Select", new { id = "ddlPeriod", @class = "form-control", @style = "width:98%;" })
+                @Html.ValidationMessageFor(model => model.APP_PeriodId, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Approval For", null, new { @class = "control-label col-md-2" })
+            <div class="form-group col-md-10">
+                @Html.TextBoxFor(model => model.APP_ApprovalFor, new { id = "txtApprovalTitle", maxlength = 100, @class = "form-control", @required = true, @style = "width:99%;" })
+                @Html.ValidationMessageFor(model => model.APP_ApprovalFor, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Summary", null, new { @class = "control-label col-md-2" })
+            <div class="form-group col-md-10">
+                @Html.TextAreaFor(model => model.APP_Description, new { @class = "form-control", required = "required", @style = "width:100%; height:400px;", @rows = 9 })
+                @Html.ValidationMessageFor(model => model.APP_Description, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+
+        </div>
+
+        <div class="form-group">
+
+        </div>
+
+        <div class="form-group">
+
+        </div>
+
+        <div class="form-group">
+
+        </div>
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Value in INR", null, new { @class = "control-label col-md-3" })
+            <div class="form-group col-md-10">
+                @*@Html.TextBoxFor(model => model.App_Value, null, new { @id = "txtApp_Value", @type = "number", @maxlength = "12", @min = "0", @max = "999999999999" })*@
+                @Html.TextBoxFor(model => model.App_Value, new { @id = "txtApp_Value", @maxlength = "12", onkeypress = "return onlyNumberKey(event)", onblur = "ClearApprovalTrail()" })
+            </div>
+        </div>
+        @if (Model != null)
+        {
+            if (Model.UploadedAttachmentsList != null)
+            {
+                if (Model.UploadedAttachmentsList.Count() > 0)
+                {
+                    <table>
+                        <tr>
+                            <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblUploadedFiles')" style="width:946px!important; height:45px;">
+                                <a href="javascript:void();"> <b>+/-</b></a>
+                                Attachments
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="tblUploadedFiles" name="tblUploadedFiles" style=" border: 1px solid #ddd">
+                                    @Html.Partial("_VwUploadedFiles", @Model.UploadedAttachmentsList)
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                }
+            }
+        }
+        <div class="form-row">
+            @Html.Label("Attachments", null, new { @class = "control-label col-md-3" })
+            <div class="form-group col-md-10">
+                @Html.TextBoxFor(m => m.Attachments, "", new { @id = "fileAttachments", type = "file", @multiple = "multiple", @class = "form-control uploadFile", @style = "width:250px; display:block", onchange = "return CheckAttachments(this);" })
+            </div>
+        </div>
+
+        <div class="form-row">
+            @Html.Label("Creator Remarks", null, new { @class = "control-label col-md-3", maxlength = 255 })
+            <div class="form-group col-md-10">
+
+
+                @Html.TextAreaFor(model => model.APP_CreatorRemarks, new { @class = "form-control", @style = "width:100%;", @rows = 3 })
+                @*@Html.ValidationMessageFor(model => model.APP_CreatorRemarks, null, new { @class = "text-danger" })*@
+            </div>
+        </div>
+
+        <div class="form-row">
+            @Html.Label("Reviewer", null, new { @class = "control-label col-md-3" })
+            <div class="form-group col-md-10">
+                @Html.DropDownListFor(m => m.APP_ReviewerID, new SelectList(ViewBag.Reviewers, "Value", "Text", null), "Select", new { id = "ddlReviewer", @class = "form-control", @style = "width:100%;", required = "" })
+                @*@Html.ValidationMessageFor(model => model.APP_ReviewerID, null, new { @class = "text-danger" })*@
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Approval Trail", null, new { @class = "control-label col-md-3" })
+            <div class="form-group col-md-10">
+                @Html.DropDownListFor(m => m.APP_ApprovalTrailId, new SelectList(ViewBag.ApprovalTrail, "Value", "Text", null), "Select", new { id = "ddlApprovalTrail", @class = "form-control", @style = "width:100%;", onchange = "ShowApprovalTrailUsers(this.value)" })
+                @Html.ValidationMessageFor(model => model.APP_ApprovalTrailId, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-9">
+                <div id="divApprovalTrailUsersList"></div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span style="color:red">*</span> @Html.Label("Final Email List", null, new { @class = "control-label col-md-3" })
+            <div class="form-group col-md-10">
+                @*@Html.DropDownListFor(m => m.SelectedaFinalEmailUsers_Entry, new SelectList(ViewBag.FinalEmailList, "Value", "Text", null), "Select", new { id = "ddlFinalEmailList", @class = "form-control", @multiple = "multiple", @style = "width:100%;" })*@
+                @Html.ListBoxFor(m => m.SelectedaFinalEmailUsers_Entry, new SelectList(ViewBag.FinalEmailList, "Value", "Text", null), new { id = "ddlFinalEmailList", @class = "form-control", @multiple = "multiple", @style = "width:100%;" })
+                @Html.ValidationMessageFor(model => model.APP_ELId, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-9">
+                <div id="divFinalEmailUsersList"></div>
+            </div>
+        </div>
+        <div class="form-row navbar-collapse">
+            <div class="form-group col-md-10">
+                @if (Model != null)
+                {
+                    if (Model.ApprovalTransactionList != null)
+                    {
+                        if (Model.ApprovalTransactionList.Count() > 0)
+                        {
+                            <table align="left" style="width:100%;">
+                                <tr>
+                                    <th class="TableHeader sectionHeader" onclick="OpenCloseGroup('tblApprovalTransaction')" style="width:946px!important; height:45px;">
+                                        <a href="javascript:void();"> <b>+/-</b></a>Approval Tracking
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div id=" tblapprovaltransaction" name="tblApprovalTransaction" style="border: 1px solid #ddd;">
+                                            @Html.Partial("_ApprovalTransaction", @Model.ApprovalTransactionList)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn btn-primary1" style="width:100%" onclick="return validateInputs();" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

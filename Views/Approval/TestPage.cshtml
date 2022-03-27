@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "TestPage";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+
+<h2>TestPage</h2>
+@using (Html.BeginForm("TestPage", "Approval", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+<div class="navbar-collapse" style="padding-left: 1px !important; width: 946px !important;">
+    <table class="table-condensed table-striped table-hover dataTable responsive nowrap table-bordered">
+        <tr>
+            <td>
+                Approval ID#
+            </td>
+            <td>
+                @Html.TextBox("ApprovalID")
+            </td>
+            <td style="width:100%">
+                <input class="btn btn-primary1" value="SendMail" name="SendMail" type="submit" id="btnSubmit" />
+            </td>
+        </tr>
+    </table>
+</div>
+}

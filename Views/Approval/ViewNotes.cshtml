@@ -1,0 +1,44 @@
+﻿@model ApprovalPortal.Models.ApprovalNotes
+
+@{
+    ViewBag.Title = "ViewNotes";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+@if(Model.AN_ID==0)
+{ 
+    @Html.Partial("_vwNotes", Model.NotesList)
+}
+
+@using (Html.BeginForm("CreateNotes", "Approval", FormMethod.Post,new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            <h4>Add/Edit Note</h4>
+          @Html.HiddenFor(model=>model.AN_APP_ID)
+          @Html.HiddenFor(model=>model.AN_ID)  
+        </div>
+
+        <div class="form-group">
+            <span style="color:red">*</span> @Html.Label("Note", null, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.AN_Notes, new { id = "txtNotes", maxlength = 255, @class = "form-control", @required = true, @style = "width:100%;", @rows = 3 })
+                @Html.ValidationMessageFor(model => model.AN_Notes, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary1" style="width:100%" />
+            </div>
+        </div>
+    </div>
+}
+
+

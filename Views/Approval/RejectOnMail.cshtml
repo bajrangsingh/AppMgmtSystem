@@ -1,0 +1,70 @@
+﻿@model ApprovalPortal.Models.ApprovalHeader
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    //alert('Rejected');
+    function closeWindow() {
+        setTimeout(function () {
+            window.close();
+        }, 10000);
+    }
+    //window.onload = closeWindow();
+
+    function validateInputs() {
+        var validationMsg = "";
+
+        if ($("#txtApproverRemarks").val() == "") {
+            validationMsg = validationMsg + "Please Enter Remarks For Rejection<br>";
+        }
+        if (validationMsg != "") {
+            MyAlert(validationMsg);
+            return false;
+        }
+        return true;
+    }
+</script>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>RejectOnMail</title>
+</head>
+<body>
+    <div>
+        @if (Model.IsActionable == true)
+        {
+            @using (Html.BeginForm("RejectOnMailF_Confirm", "Approval", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-group">
+                    <span style="color:red">*</span> @Html.Label("Remarks For Rejection", null, new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.ApproverRemarks, new { id = "txtApproverRemarks", maxlength = 100, @class = "form-control", @required = true, @style = "width:100%;", @rows = 3 })
+                            @Html.ValidationMessageFor(model => model.ApproverRemarks, null, new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.APP_PendingWith)
+                            @Html.HiddenFor(model => model.APP_ID)
+                            @Html.HiddenFor(model => model.Command)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Submit" class="btn btn-primary1" style="width:100%" onclick="return validateInputs();" />
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="form-group">
+                <span style="color:red">*</span> @Html.Label("Unauthorized user for Action", null, new { @class = "control-label col-md-2" })
+            </div>
+        }
+    </div>
+</body>
+</html>

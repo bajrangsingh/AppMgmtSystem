@@ -1,0 +1,16 @@
+﻿@model IEnumerable<ApprovalPortal.Models.ApprovalHeader>
+@{
+    ViewBag.Title = "Open Requests";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+<script type="text/javascript">
+</script>
+
+@if (@Session["loginEmp"] != null)
+{
+    @Html.Partial("_allOpenRequests", Model)
+}
+else
+{
+    Response.Redirect("~/Account/LogIn");
+}

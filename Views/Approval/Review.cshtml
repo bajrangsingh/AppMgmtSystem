@@ -1,0 +1,153 @@
+﻿@model ApprovalPortal.Models.ApprovalHeader
+@{
+    ViewBag.Title = "Review";
+    Layout = "~/Views/Shared/AdminLTE/_Layout.cshtml";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //// More code using $ as alias to jQuery
+        //$("#APP_Description").height(100);
+        //$("#APP_Description").htmlarea();
+    });
+    function ValidateData() {
+        var selectedAction = $('input[name=ApproverAction]:checked').val()
+        if (selectedAction == 3) {
+            var selectedUser = $("#ddlSendBackForRework").val();
+            if (selectedUser == "") {
+                alert('Please select user to Rework.');
+                return false;
+            }
+        }
+        if ($('#txtRemark').val() == "") {
+            alert('Please Enter Remarks.');
+            return false;
+        }
+        if ($('#ddlFinalEmailList').val() == "") {
+            alert('Please Select Final Email List.');
+            return false;
+        }
+        if (typeof (selectedAction) === "undefined") {
+            alert('Please Select Action.');
+            return false;
+        }
+        return true;
+    }
+    function AppoverAction(ctrl) {
+        var val = $(ctrl).val();
+        // alert(val);
+        ToggleSendbackForRework(val);
+
+    }
+
+    function ToggleSendbackForRework(selectedAction) {
+        if (selectedAction == 3) {
+            $('#trSendbackForRework').css("display", "block");
+        }
+        else {
+            $('#trSendbackForRework').css("display", "none");
+        }
+    }
+</script>
+
+@using (Html.BeginForm("Review", "Approval"))
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div id="divFactsheetForPrint">@Html.Partial("_VwApprovalDataRO", @Model)</div>
+
+        <div class="  " style="padding-left: 1px;">
+            <table class="table-condensed table-striped table-hover dataTable responsive nowrap table-bordered" style="width:945px">
+                <tr>
+                    <th colspan="2" class="TableHeader" style="width: 60%; padding: .75rem; vertical-align: top; padding-left:20px;">
+                        Approver Section
+
+                    </th>
+
+                </tr>
+                <tr>
+                    <td style="width: 20%; vertical-align: top; padding-left: 10px">
+                        Action<span style="color:red">*</span>
+                    </td>
+                    <td style="width:80%">
+                        <table>
+                            <tr>
+                                <td style="width:60%">
+                                    <table>
+                                        <tr>
+                                            <td style="padding:10px">Approve @Html.RadioButtonFor(model => model.ApproverAction, 1, new { onclick = "AppoverAction(this);" })</td>
+                                            @*<td style="padding:10px">Reject @Html.RadioButtonFor(model => model.ApproverAction, 2, new { onclick = "AppoverAction(this);" })</td>*@
+                                            <td style="padding:10px"> Send Back @Html.RadioButtonFor(model => model.ApproverAction, 3, new { onclick = "AppoverAction(this);" })</td>
+                                            @Html.ValidationMessageFor(model => model.ApproverAction, null, new { @class = "text-danger" })
+
+                                        </tr>
+                                    </table>
+                                    <div>
+                                        @*@Html.DropDownListFor(m => m.ApproverAction, new SelectList(ViewBag.ActionMaster, "Value", "Text", null), new { id = "ddlActionMaster", @class = "form-control", onchange = "AppoverAction(this);", style = "width: 200px;" })*@
+                                    </div>
+                                </td>
+                                <td id="trSendbackForRework" style="width:40%;display:none">
+                                    <div>
+                                        @Html.DropDownListFor(m => m.SendBackForRework, new SelectList(ViewBag.SendBackForRework, "Value", "Text", null), "Select", new { id = "ddlSendBackForRework", @class = "form-control", style = "width: 200px;" })
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width:10%; padding-left:10px">
+                        Remarks<span style="color:red">*</span>
+                    </td>
+                    <td style="width:90%">
+                        <div style="width:60%">
+                            @Html.TextAreaFor(m => m.ApproverRemarks, new { id = "txtRemark", maxlength = 250, @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ApproverRemarks, null, new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:10%; padding-left:10px">
+                        Final Email List<span style="color:red">*</span>
+                    </td>
+                    <td style="width:90%">
+                        <div style="width:60%">
+                            @Html.DropDownListFor(m => m.APP_ELId, new SelectList(ViewBag.FinalEmailList, "Value", "Text", null), "Select", new { id = "ddlFinalEmailList", @class = "form-control", @style = "width:100%;" })
+                            @Html.ValidationMessageFor(model => model.APP_ELId, null, new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td colspan="2" style="width:100%">
+                        <div style="width:60%">
+
+                            <input class="btn btn-primary1" value="Reviewed" type="submit" id="btnSubmit" onclick="return ValidateData();" />
+                            <input class="btn btn-primary1" value="Approved" type="submit" id="btnSubmit" onclick="return ValidateData();" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
