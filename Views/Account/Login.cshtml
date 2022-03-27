@@ -1,0 +1,253 @@
+﻿@model ApprovalPortal.Models.LoginModel
+
+@{
+    //ViewBag.Title = "Log in";
+    Layout = "~/Views/Shared/_blankLayout.cshtml";
+}
+
+@*<hgroup class="title">
+        <h1>@ViewBag.Title.</h1>
+    </hgroup>*@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+
+
+<div style="width: 75%; margin-top: 0%; margin-left: 15%; font-family: Calibri">
+
+
+    <section id="loginForm_1" style="align-content:center;text-align:center">
+
+        <div class="text-center">
+
+            @*<img src="https://www.zeeintranet.com/CompanyLogos/LogoHandler.ashx?w=261&h=188" />*@
+            <img src="https://www.zeeintranet.com/CompanyLogos/LogoHandler.ashx?cc=1000&amp;w=261&amp;h=188" alt="ZEEL" style="align-self: center;">
+
+        </div>
+
+        @*<div class="container">*@
+        <div class="text-center">
+            <h4 class="text-center" style="color: #025376">Approval Portal</h4>
+            <div id="loginbox" style="margin-top:30px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+
+                <div class="panel panel-info">
+
+
+
+                    <div class="panel-heading">
+                        <div class="panel-title">Sign In</div>
+                        @*<div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Forgot password?</a></div>*@
+                    </div>
+
+                    <div style="padding-top:30px" class="panel-body">
+                        @if(@TempData["DisplayMsg"]!=null)
+                        { 
+                            <div style="display:block" id="login-alert" class="alert alert-danger col-sm-12">
+                                @TempData["DisplayMsg"]
+                            </div>
+                        }
+
+                        @*<form id="loginform" class="form-horizontal" role="form">*@
+
+                        @using (Html.BeginForm(new { ReturnUrl = ViewBag.ReturnUrl }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @*@Html.ValidationSummary(true)*@
+
+
+
+
+                            <div style="margin-bottom: 25px" class="input-group">
+
+                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "username" })
+                                @Html.ValidationMessageFor(m => m.UserName)
+                                @*<input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username">*@
+                            </div>
+
+
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "password" })
+                                @Html.ValidationMessageFor(m => m.Password)
+
+                                @*<input id="login-password" type="password" class="form-control" name="password" placeholder="password">*@
+                            </div>
+
+
+                            @*<div class="input-group">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="login-remember" type="checkbox" name="remember" value="1"> Remember me
+                                        </label>
+                                    </div>
+                                </div>*@
+
+                            <div style="margin-top:10px" class="form-group">
+                                <!-- Button -->
+                                <div class="col-sm-12 controls">
+                                    <input id="btn-login" type="submit" value="Log in" style="background-color: #622d8e; border-color: #4cae4c;" class="btn btn-lg btn-success btn-block" />
+                                    @*<a id="btn-login" href="#" class="btn btn-success">Login  </a>
+                                        <a id="btn-fblogin" href="#" class="btn btn-primary">Login with Facebook</a>*@
+                                </div>
+                            </div>
+                            <div style="" class="form-group">
+                                <!-- Button -->
+                                <div class="col-sm-12 controls">
+                                    <span>To reset password please login to <a href="https://www.zeeconnect.in">https://www.zeeconnect.in</a> & navigate to path Process >> Quick Links >> Reset Password for SAP ID (Employee Code)</span>
+                                </div>
+                            </div>
+                        }
+                        @*<div class="form-group">
+                                <div class="col-md-12 control">
+                                    <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%">
+                                        Don't have an account!
+                                        <a href="#" onclick="$('#loginbox').hide(); $('#signupbox').show()">
+                                            Sign Up Here
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>*@
+
+
+
+                        @*</form>*@
+
+                    </div>
+
+                </div>
+            </div>
+            <div id="signupbox" style="display:none; margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">Sign Up</div>
+                        <div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a></div>
+                    </div>
+                    <div class="panel-body">
+                        <form id="signupform" class="form-horizontal" role="form">
+
+                            <div id="signupalert" style="display:none" class="alert alert-danger">
+                                <p>Error:</p>
+                                <span></span>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <label for="email" class="col-md-3 control-label">Email</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="email" placeholder="Email Address">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="firstname" class="col-md-3 control-label">First Name</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="firstname" placeholder="First Name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname" class="col-md-3 control-label">Last Name</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="lastname" placeholder="Last Name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="col-md-3 control-label">Password</label>
+                                <div class="col-md-9">
+                                    <input type="password" class="form-control" name="passwd" placeholder="Password">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="icode" class="col-md-3 control-label">Invitation Code</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="icode" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <!-- Button -->
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button id="btn-signup" type="button" class="btn btn-info"><i class="icon-hand-right"></i> &nbsp Sign Up</button>
+                                    <span style="margin-left:8px;">or</span>
+                                </div>
+                            </div>
+
+                            <div style="border-top: 1px solid #999; padding-top:20px" class="form-group">
+
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button id="btn-fbsignup" type="button" class="btn btn-primary"><i class="icon-facebook"></i>   Sign Up with Facebook</button>
+                                </div>
+
+                            </div>
+
+
+
+                        </form>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+        <div style="visibility:hidden">
+
+            <h2>Use a local account to log in.</h2>
+            @using (Html.BeginForm(new { ReturnUrl = ViewBag.ReturnUrl }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+
+                <fieldset>
+                    <legend>Log in Form</legend>
+                    <ol>
+                        <li>
+                            @Html.LabelFor(m => m.UserName)
+                            @Html.TextBoxFor(m => m.UserName)
+                            @Html.ValidationMessageFor(m => m.UserName)
+                        </li>
+                        <li>
+                            @Html.LabelFor(m => m.Password)
+                            @Html.PasswordFor(m => m.Password)
+                            @Html.ValidationMessageFor(m => m.Password)
+                        </li>
+                        <li>
+                            @Html.CheckBoxFor(m => m.RememberMe)
+                            @Html.LabelFor(m => m.RememberMe, new { @class = "checkbox" })
+                        </li>
+                    </ol>
+                    <input type="submit" value="Log in" />
+                </fieldset>
+                <p>
+                    @Html.ActionLink("Register", "Register") if you don't have an account.
+                </p>
+            }
+
+
+        </div>
+
+    </section>
+
+</div>
+@*<section class="social" id="socialLoginForm">
+
+
+
+
+    </section>*@
+
+@*<section class="social" id="socialLoginForm">
+        <h2>Use another service to log in.</h2>
+        @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
+    </section>*@
+
+@section Scripts {
+}
+@Scripts.Render("~/bundles/jqueryval")
