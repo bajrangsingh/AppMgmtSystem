@@ -1,0 +1,86 @@
+﻿
+.tableHeader {
+    background-color: #622d8e;
+    color: #eee;
+    font-size: 18px;
+}
+
+.Loading {
+    /*background-image: url(./img/progress.gif);*/
+    background-image: url(./img/processing.gif);
+    background-position: center;
+    background-position-x: center;
+    background-repeat: no-repeat;
+    height: 200px;
+}
+
+.tdLable {
+    /*background-color:lightgrey;*/
+    background-color: #622d8e;
+    color: #eee;
+}
+
+.tabFont {
+    font-variant: small-caps;
+}
+
+.hrefCss {
+    font: 15px Arial;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: ##622d8e;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+    /*background-image:url(./img/pdfdownload.png);*/
+}
+
+.validation-summary-errors {
+    color: #e80c4d;
+    font-weight: bold;
+    font-size: 1.1em;
+    /*border: 1px solid #e80c4d;*/
+}
+
+a.ExportExcel {
+    background: url(../Content/Img/exporttoexcel.png) no-repeat top left;
+    display: block;
+    width: 15px;
+    height: 15px;
+    text-indent: -9999px; /* hides the link text */
+}
+
+.btn-primary1 {
+    color: #ffffff;
+    background-color: #622d8e;
+    border-color: #622d8e;
+}
+
+.TableHeader {
+    background-color: #622d8e !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    overflow: auto !important;
+}
+
+.tdLabelStyle {
+    border: 1px solid #ddd;
+    padding-left: 4px;
+    font-weight: bold;
+    vertical-align:top;
+}
+
+.tdValueStyle {
+    border: 1px solid #ddd;
+    padding-left: 4px;
+    vertical-align:top;
+}
+
+.sectionHeader {
+    padding: .75rem;
+    vertical-align: top;
+    font-size: 16px !important;
+    overflow: auto !important;
+}
