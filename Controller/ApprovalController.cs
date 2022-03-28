@@ -1,7 +1,13 @@
-﻿using ApprovalPortal.Models;
+using ApprovalPortal.Models;
 using ApprovalPortal.Repository;
+using Microsoft.Azure;
+//using Microsoft.WindowsAzure.Storage;
+//using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -11,12 +17,16 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 
+
 namespace ApprovalPortal.Controllers
 {
-    // [APActionFilter]
+     [APActionFilter]
     public class ApprovalController : Controller
     {
         private readonly IApprovalRepo ApprovalRepo;
+      
+        private static string AzureStorageBlobConnectingString = ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString.ToString();
+        private static string azure_ContainerName = ConfigurationManager.AppSettings["AzureContainerName"].ToString();
         public ApprovalController(IApprovalRepo _approvalRepo)
         {
             this.ApprovalRepo = _approvalRepo;
@@ -57,8 +67,8 @@ namespace ApprovalPortal.Controllers
 
             if (!IsValidUser)
             {
-                TempData["DisplayMsg"] = "Invalid Operation, Please login again.";
-                return RedirectToAction("Login", "Account");
+                TempData["ErrorMsg"] = "Unauthorised Access. You are not authorized to view!";
+                return RedirectToAction("AccessForBidden", "Approval");
             }
 
             GetMasterViewBags();
@@ -77,6 +87,7 @@ namespace ApprovalPortal.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Review(ApprovalHeader appHeader, string command = "")
         {
             var loginEmp1 = (Users)Session["loginEmp"];
@@ -102,6 +113,7 @@ namespace ApprovalPortal.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult CreateNotes(ApprovalNotes note)
         {
             var loginEmp1 = (Users)Session["loginEmp"];
@@ -176,8 +188,8 @@ namespace ApprovalPortal.Controllers
 
             if (!IsValidUser && !user.US_Admin)
             {
-                TempData["DisplayMsg"] = "Invalid Operation, Please login again.";
-                return RedirectToAction("Login", "Account");
+                TempData["ErrorMsg"] = "Unauthorised Access. You are not authorized to view!";
+                return RedirectToAction("AccessForBidden", "Approval");
             }
 
             return View(ObjApprovalHeader); ;
@@ -217,8 +229,8 @@ namespace ApprovalPortal.Controllers
 
             if (!IsValidUser)
             {
-                TempData["DisplayMsg"] = "Invalid Operation, Please login again.";
-                return RedirectToAction("Login", "Account");
+                TempData["ErrorMsg"] = "Unauthorised Access. You are not authorized to view!";
+                return RedirectToAction("AccessForBidden", "Approval");
             }
 
             return View(ObjApprovalHeader); ;
@@ -444,6 +456,7 @@ namespace ApprovalPortal.Controllers
             return allRequestList;
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(ApprovalHeader appHeader, string command = "")
         {
 
@@ -473,13 +486,9 @@ namespace ApprovalPortal.Controllers
             {
                 string strDisplayMsg = "Approval No: " + Convert.ToString(output.ReturnVal) + " is Created/Updated successfully.";
                 TempData["DisplayMsg"] = strDisplayMsg;
-                // Email email = factsheetService.GetFactsheetMail(output.ReturnVal);
-                //SendMail(email);
-                SaveAttachments(output.ReturnVal);
+                //SaveAttachments(output.ReturnVal);
+                SaveAttachmentsToAzureBlobStorage(output.ReturnVal);
                 EmailMessage EmailToSend = ApprovalRepo.GetEmailDetails(Convert.ToInt32(output.ReturnVal));
-                //Utility.SendMailThroughSendGrid(EmailToSend.To, EmailToSend.CC, EmailToSend.Bcc, EmailToSend.EmailSubject, EmailToSend.EmailBody, EmailToSend.Attachments);
-
-                //SendMailThroughSendGrid_Async(EmailToSend.To, EmailToSend.CC, EmailToSend.Bcc, EmailToSend.EmailSubject, EmailToSend.EmailBody, EmailToSend.Attachments);
                 await Utility.SendMailThroughSendGrid_Async(EmailToSend.To, EmailToSend.CC, EmailToSend.Bcc, EmailToSend.EmailSubject, EmailToSend.EmailBody, EmailToSend.Attachments);
 
             }
@@ -498,6 +507,7 @@ namespace ApprovalPortal.Controllers
 
         // public async Task<ActionResult> ShowApprovalForCreator(ApprovalHeader objApprovalHeader)
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> ApproveFromCreator(ApprovalHeader objApprovalHeader)
         {
             //UpdateRequestStatusFromCreator
@@ -572,6 +582,7 @@ namespace ApprovalPortal.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Approve(ApprovalHeader objApprovalHeader, string command)
         {
             Result output = null;
@@ -860,7 +871,7 @@ namespace ApprovalPortal.Controllers
                 return null;
             }
         }
-        public ActionResult DeleteDoument(int FileID)
+        public ActionResult DeleteDoument_OnPrime(int FileID)
         {
             IList<Files> lstFile = new List<Files>();
             if (Session["UploadedFiles"] != null)
@@ -908,6 +919,49 @@ namespace ApprovalPortal.Controllers
             return PartialView("_VwUploadedFiles", lstFile);
         }
 
+        public ActionResult DeleteDoument(int FileID)
+        {
+            //
+            IList<Files> lstFile = new List<Files>();
+            if (Session["UploadedFiles"] != null)
+            {
+                lstFile = (IList<Files>)Session["UploadedFiles"];
+            }
+            if (lstFile.Count > 0)
+            {
+                Files file = lstFile.Where(x => x.FileID == FileID).FirstOrDefault();
+                if (file != null)
+                {
+                    lstFile.Remove(file);
+
+                    Result rs = ApprovalRepo.DeleteDocument(FileID);
+                    if (rs.exception == null)
+                    {
+                        try
+                        {
+                            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(AzureStorageBlobConnectingString);
+                            CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+                            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(azure_ContainerName);
+                            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(file.FileName);
+                            blockBlob.DeleteIfExists();
+                            TempData["DisplayMsg"] = "File:" + file.FileName + " Delete Successfully!";
+                        }
+                        catch (Exception)
+                        {
+
+                            throw;
+                        }
+                    }
+                }
+            }
+            ViewBag.IsActionable = true;
+
+            Session["UploadedFiles"] = lstFile;
+            return PartialView("_VwUploadedFiles", lstFile);
+            //
+
+
+        }
 
         public string[] GetDropdownListSelectedFinalEmailUsers(IList<FinalEmailUsersList> lst)
         {
@@ -947,6 +1001,76 @@ namespace ApprovalPortal.Controllers
                 return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, Filename);
             }
         }
+
+        public ActionResult DownloadDocument_Vinod(string fileName)
+        {
+            //string storageConnection = CloudConfigurationManager.GetSetting(AzureStorageBlobConnectingString);
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString);
+
+
+           // CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(storageConnection);
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+
+
+            CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference(azure_ContainerName);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference("download.jpg");
+
+
+
+            MemoryStream memStream = new MemoryStream();
+
+            blockBlob.DownloadToStream(memStream);
+
+            System.Web.HttpContext.Current.Response.ContentType = blockBlob.Properties.ContentType.ToString();
+            System.Web.HttpContext.Current.Response.AddHeader("Content-Disposition", "Attachment; filename=" + blockBlob.ToString());
+
+            System.Web.HttpContext.Current.Response.AddHeader("Content-Length", blockBlob.Properties.Length.ToString());
+            System.Web.HttpContext.Current.Response.BinaryWrite(memStream.ToArray());
+            System.Web.HttpContext.Current.Response.Flush();
+            System.Web.HttpContext.Current.Response.Close();
+
+            return null;
+        }
+
+        public ActionResult DownloadDocument_BLOB(string fileName)
+        {
+            //fileName = "123.png";
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString);
+            CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(azure_ContainerName);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+            MemoryStream memStream = new MemoryStream();
+            blockBlob.DownloadToStream(memStream);
+            Response.ContentType = blockBlob.Properties.ContentType.ToString();
+            Response.AddHeader("Content-Disposition", "Attachment; filename=" + blockBlob.Name.ToString());
+            Response.AddHeader("Content-Length", blockBlob.Properties.Length.ToString());
+            Response.BinaryWrite(memStream.ToArray());
+            Response.Flush();
+            Response.Close();
+            return null;
+        }
+
+
+        [HttpPost]
+        public ActionResult DownloadDocument_BLOB_post(string fileName)
+        {
+            CloudBlockBlob blockBlob;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                string blobstorageconnection = ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString;
+                CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(blobstorageconnection);
+                CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+                CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(azure_ContainerName);
+                blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+                blockBlob.DownloadToStreamAsync(memoryStream);
+            }
+            Stream blobStream = blockBlob.OpenReadAsync().Result;
+            return File(blobStream, blockBlob.Properties.ContentType, blockBlob.Name);
+        }
+
+
         public ActionResult DownloadSupportDoument(string Filename)
         {
 
@@ -989,5 +1113,57 @@ namespace ApprovalPortal.Controllers
             await Utility.SendMailThroughSendGrid_Async(EmailToSend.To, EmailToSend.CC, EmailToSend.Bcc, EmailToSend.EmailSubject, EmailToSend.EmailBody, EmailToSend.Attachments);
             return View("TestPage");
         }
+        [HttpGet]
+        public ActionResult AccessForBidden()
+        {
+            return View();
+        }
+        private void SaveAttachmentsToAzureBlobStorage(string approvalId)
+        {
+            int NoOfFiles = Request.Files.Count;
+            for (int i = 0; i < NoOfFiles; i++)
+            {
+                HttpPostedFileBase file = Request.Files[i];
+                if (file.FileName != "")
+                {
+                    var fileName = approvalId + "_" + Path.GetFileName(file.FileName);
+                    UploadFiles uploadFileObj = new UploadFiles();
+                    uploadFileObj.UploadFileAsync(file, fileName);
+                }
+            }
+        }
+        public ActionResult ShowBlobFiles()
+        {
+            CloudStorageAccount backupStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString);
+
+            var backupBlobClient = backupStorageAccount.CreateCloudBlobClient();
+            var backupContainer = backupBlobClient.GetContainerReference(azure_ContainerName);
+
+
+            var blobs = backupContainer.ListBlobs().OfType<CloudBlockBlob>().ToList();
+            List<string> lstFileName = new List<string>();
+            foreach (var blob in blobs)
+            {
+                string bName = blob.Name;
+                lstFileName.Add(bName);
+                long bSize = blob.Properties.Length;
+                string bModifiedOn = blob.Properties.LastModified.ToString();
+            }
+            return View(lstFileName);
+
+        }
+        //public async Task<byte[]> Get(string fileName, string containerName)
+        //{
+        //    BlobServiceClient _blobServiceClient = new BlobServiceClient();
+        //    var blobContainer = _blobServiceClient.GetBlobContainerClient(containerName);
+
+        //    var blobClient = blobContainer.GetBlobClient(fileName);
+        //    var downloadContent = await blobClient.DownloadAsync();
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        await downloadContent.Value.Content.CopyToAsync(ms);
+        //        return ms.ToArray();
+        //    }
+        //}
     }
 }
