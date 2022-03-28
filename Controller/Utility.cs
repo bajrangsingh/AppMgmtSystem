@@ -1,4 +1,4 @@
-﻿using ApprovalPortal.Models;
+using ApprovalPortal.Models;
 using ApprovalPortal.Repository;
 using System;
 using System.Collections.Generic;
@@ -14,12 +14,18 @@ using System.Configuration;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.IO;
+using System.Net.Mime;
 
 namespace ApprovalPortal.Controllers
 {
     public class Utility
     {
         static bool mailSent = false;
+        private static string AzureStorageBlobConnectingString = ConfigurationManager.ConnectionStrings["AzureStorageBlobConnectingString"].ConnectionString.ToString();
+        private static string azure_ContainerName = "tempdemo";
         public static List<SelectListItem> GetActionMaster()
         {
             List<SelectListItem> listActionMaster = new List<SelectListItem>();
@@ -378,16 +384,22 @@ namespace ApprovalPortal.Controllers
                 {
                     try
                     {
-
-                       // 
-                        //using(Attachment att=new Attachment((HttpContext.Current.Server.MapPath("~/Attachments/" + aFile.FileName))))
-                        //{
-                        //     message.Attachments.Add(att);
-                        //}
-
-                        var att = new Attachment(HttpContext.Current.Server.MapPath("~/Attachments/" + aFile.FileName)); 
-                        
-                        message.Attachments.Add(att);
+                        // var att = new Attachment(HttpContext.Current.Server.MapPath("~/Attachments/" + aFile.FileName)); 
+                        CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(AzureStorageBlobConnectingString);
+                        CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+                        CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(azure_ContainerName);
+                        CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(aFile.FileName);
+                        MemoryStream memStream = new MemoryStream();
+                        blockBlob.DownloadToStream(memStream);
+                        memStream.Position = 0;
+                        // Create attachment
+                        ContentType contentType = new ContentType();
+                        contentType.MediaType = MediaTypeNames.Application.Octet;
+                        contentType.Name = aFile.FileName;
+                        Attachment attachment = new Attachment(memStream, contentType);
+                        message.Attachments.Add(attachment);
+                        //message.Attachments.Add(new Attachment(memStream, aFile.FileName));
+                        // message.Attachments.Add(att);
                         //att.Dispose();
                     }
                     catch (Exception ex)
